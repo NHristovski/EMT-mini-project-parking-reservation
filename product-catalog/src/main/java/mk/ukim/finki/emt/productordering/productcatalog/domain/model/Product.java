@@ -32,8 +32,22 @@ public class Product extends AbstractEntity<ProductId> {
 
     }
 
+    public Product(ProductId productId, String name, Money price, int quantity) {
+        super(productId);
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+
+    public Product(String name, Money price, int quantity) {
+        this.name = name;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
     @JsonProperty("name")
-    public String name() {
+    public String getName() {
         return name;
     }
 
@@ -51,5 +65,16 @@ public class Product extends AbstractEntity<ProductId> {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public void subtractQuantity(int qnt) {
+        if (qnt>this.quantity) {
+            throw new RuntimeException("unsupported quantity");
+        }
+        this.quantity -= qnt;
+    }
+
+    public void addQuantity(int qnt) {
+        this.quantity +=qnt;
     }
 }

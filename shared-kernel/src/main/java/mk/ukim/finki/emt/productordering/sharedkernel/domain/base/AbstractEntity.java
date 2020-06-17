@@ -1,10 +1,12 @@
 package mk.ukim.finki.emt.productordering.sharedkernel.domain.base;
 
+import lombok.Getter;
 import org.springframework.data.util.ProxyUtils;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.MappedSuperclass;
 
+@Getter
 @MappedSuperclass
 public abstract class AbstractEntity<ID extends DomainObjectId> implements IdentifiableDomainObject<ID> {
 
@@ -21,7 +23,7 @@ public abstract class AbstractEntity<ID extends DomainObjectId> implements Ident
 
     @Override
     public ID id() {
-        return null;
+        return id;
     }
 
     @Override

@@ -7,6 +7,6 @@ public interface RemoteEventLogService {
 
     String source();
 
-    RemoteEventLog currentLog();
+    RemoteEventLog currentLog(long lastProcessedId);
 
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 @Service
 public class DomainEventLogService {
@@ -27,8 +27,13 @@ public class DomainEventLogService {
         storedDomainEventRepository.saveAndFlush(storedEvent);
     }
 
-    public Stream<StoredDomainEvent> retrieveLog(long lastProcessedEventId) {
-        long max = storedDomainEventRepository.findHighestDomainEventId();
+    @NonNull
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = true)
+    public List<StoredDomainEvent> retrieveLog(long lastProcessedEventId) {
+        var max = storedDomainEventRepository.findHighestDomainEventId();
+        if (max == null) {
+            max = 0L;
+        }
         return storedDomainEventRepository.findEventsBetween(lastProcessedEventId,max);
     }
 }

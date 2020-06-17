@@ -27,6 +27,11 @@ public class Money implements ValueObject {
         return new Money(currency,amount);
     }
 
+    private Money() {
+        this.currency=null;
+        this.amount = 0;
+    }
+
     public Money add(Money money) {
         if (!currency.equals(money.currency)) {
             throw new IllegalArgumentException("Cannot add two Money objects with different currencies");

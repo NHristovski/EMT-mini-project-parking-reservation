@@ -18,6 +18,9 @@ public class CityName implements ValueObject {
     @Column(name="city_name")
     private final String name;
 
+    //unused
+    private CityName() {this.name="";}
+
     @JsonCreator
     public CityName(@NonNull String name) {
         this.name = Objects.requireNonNull(name, "name must not be null");

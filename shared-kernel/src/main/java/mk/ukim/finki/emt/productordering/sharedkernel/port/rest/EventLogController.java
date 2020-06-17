@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/event-log")
@@ -24,6 +23,6 @@ public class EventLogController {
     @GetMapping(path="/{lastProcessedId}")
     public ResponseEntity<List<StoredDomainEvent>> domainEvents(@PathVariable("lastProcessedId") long lastProcessedId) {
         var responseBuilder = ResponseEntity.ok();
-        return responseBuilder.body(domainEventLogService.retrieveLog(lastProcessedId).collect(Collectors.toList()));
+        return responseBuilder.body(domainEventLogService.retrieveLog(lastProcessedId));
     }
 }

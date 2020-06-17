@@ -1,6 +1,7 @@
 package mk.ukim.finki.emt.productordering.ordermanagement.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 import mk.ukim.finki.emt.productordering.sharedkernel.domain.base.AbstractEntity;
 import mk.ukim.finki.emt.productordering.sharedkernel.domain.base.DomainObjectId;
 import mk.ukim.finki.emt.productordering.sharedkernel.domain.financial.Currency;
@@ -9,12 +10,14 @@ import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
 @Entity
 @Table(name = "orders")
+@Getter
 public class Order extends AbstractEntity<OrderId> {
 
     @Version
@@ -48,9 +51,10 @@ public class Order extends AbstractEntity<OrderId> {
 
     }
 
-    public Order(@NonNull Instant orderedOn, @NonNull Currency currency, @NonNull RecipientAddress billingAddress,
-                 @NonNull RecipientAddress shippingAddress) {
+    public Order(@NonNull Instant orderedOn, @NonNull Currency currency, @NonNull RecipientAddress billingAddress) {
         super(DomainObjectId.randomId(OrderId.class));
+        this.items = new HashSet<>();
+        setCurrency(currency);
         setOrderedOn(orderedOn);
         setState(OrderState.RECEIVED);
         setBillingAddress(billingAddress);
@@ -85,6 +89,11 @@ public class Order extends AbstractEntity<OrderId> {
         items.add(item);
         return item;
     }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
 
     public Money total() {
         return items.stream().map(OrderItem::subtotal).reduce(new Money(currency, 0), Money::add);

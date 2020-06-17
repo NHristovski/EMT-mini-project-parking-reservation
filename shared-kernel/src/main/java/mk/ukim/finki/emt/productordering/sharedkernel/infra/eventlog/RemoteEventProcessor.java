@@ -15,15 +15,15 @@ import java.util.Map;
 public class RemoteEventProcessor {
 
     private final ProcessedRemoteEventRepository processedRemoteEventRepository;
-    private final Map<String,RemoteEventLogService> remoteEventLogs;
-    private final Map<String,RemoteEventTranslator> remoteEventTranslators;
+    private final Map<String, RemoteEventLogService> remoteEventLogs;
+    private final Map<String, RemoteEventTranslator> remoteEventTranslators;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TransactionTemplate transactionTemplate;
 
 
     public RemoteEventProcessor(ProcessedRemoteEventRepository processedRemoteEventRepository,
-                                Map<String,RemoteEventLogService> remoteEventLogs,
-                                Map<String,RemoteEventTranslator> remoteEventTranslators,
+                                Map<String, RemoteEventLogService> remoteEventLogs,
+                                Map<String, RemoteEventTranslator> remoteEventTranslators,
                                 ApplicationEventPublisher applicationEventPublisher,
                                 TransactionTemplate transactionTemplate) {
         this.processedRemoteEventRepository = processedRemoteEventRepository;
@@ -39,11 +39,10 @@ public class RemoteEventProcessor {
     }
 
     private void processEvents(@NonNull RemoteEventLogService remoteEventLogService) {
-        var lastProcessedId = getLastProcessedId(remoteEventLogService);
 
-        var log = remoteEventLogService.currentLog();
+        var log = remoteEventLogService.currentLog(getLastProcessedId(remoteEventLogService));
 
-        processEvents(remoteEventLogService, lastProcessedId, log.events());
+        processEvents(remoteEventLogService, log.events());
 
     }
 
@@ -53,18 +52,16 @@ public class RemoteEventProcessor {
                 .orElse(0L);
     }
 
-    private void processEvents(@NonNull RemoteEventLogService remoteEventLogService, long lastProcessedId,
+    private void processEvents(@NonNull RemoteEventLogService remoteEventLogService,
                                @NonNull List<StoredDomainEvent> events) {
         events.forEach(event -> {
-            if (event.id() > lastProcessedId) {
-                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-                    @Override
-                    protected void doInTransactionWithoutResult(TransactionStatus status) {
-                        publishEvent(event);
-                        setLastProcessedId(remoteEventLogService, event.id());
-                    }
-                });
-            }
+            transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                protected void doInTransactionWithoutResult(TransactionStatus status) {
+                    publishEvent(event);
+                    setLastProcessedId(remoteEventLogService, event.id());
+                }
+            });
         });
     }
 

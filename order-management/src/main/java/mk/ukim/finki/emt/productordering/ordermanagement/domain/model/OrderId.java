@@ -12,6 +12,9 @@ import javax.persistence.Embeddable;
 @EqualsAndHashCode
 public class OrderId extends DomainObjectId {
 
+    private OrderId() {
+        super("");
+    }
 
     public OrderId(@NonNull String id) {
         super(id);
